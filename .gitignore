@@ -22,6 +22,8 @@ local.properties
 /.idea/modules.xml
 /.idea/scopes/scope_settings.xml
 /.idea/caches/build_file_checksums.ser
+.idea/caches/build_file_checksums.ser
+.idea/assetWizardSettings.xml
 /.idea/vcs.xml
 *.iml
 
