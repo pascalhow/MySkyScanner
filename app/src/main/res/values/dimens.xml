@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="layout_small_margin">8dp</dimen>
+    <dimen name="layout_small_padding">8dp</dimen>
+    <dimen name="image_size_small">200dp</dimen>
+    <dimen name="card_view_default_elevation">8dp</dimen>
+    <dimen name="card_view_default_corner_radius">4dp</dimen>
+
+    <!-- Item Flight Details -->
+    <dimen name="flight_detail_card_view_elevation">@dimen/cardview_default_elevation</dimen>
+    <dimen name="flight_detail_card_view_corner_radius">@dimen/card_view_default_corner_radius</dimen>
+    <dimen name="flight_detail_card_view_margin">@dimen/layout_small_padding</dimen>
+    <dimen name="flight_detail_card_view_padding">@dimen/layout_small_padding</dimen>
+    <dimen name="flight_detail_image_size">@dimen/image_size_small</dimen>
+    <dimen name="flight_detail_image_margin">@dimen/layout_small_margin</dimen>
+    <dimen name="flight_detail_text_margin">@dimen/layout_small_margin</dimen>
+</resources>
