@@ -1,31 +1,18 @@
 package com.pascalhow.myskyscanner.rest
 
-import com.google.gson.GsonBuilder
-import com.pascalhow.myskyscanner.activities.search.FlightsSearch
-import com.pascalhow.myskyscanner.rest.model.Currencies
 import com.pascalhow.myskyscanner.rest.model.FlightsResult
-import com.pascalhow.myskyscanner.rest.model.Itineraries
-import com.pascalhow.myskyscanner.rest.model.ServiceQuery
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.Result
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
-
+import retrofit2.http.*
 
 interface SkyScannerApiService {
 
     @FormUrlEncoded
     @POST("pricing/v1.0")
-    fun request(
+    fun createSession(
         @Field("country") country: String,
         @Field("currency") currency: String,
         @Field("locale") locale: String,
@@ -36,7 +23,10 @@ interface SkyScannerApiService {
         @Field("adults") adults: String,
         @Field("apiKey") apiKey: String,
         @Field("locationSchema") locationSchema: String
-    ): Observable<Response<Unit>>
+    ): Observable<Response<Any>>
+
+    @GET
+    fun request(@Url sessionUrl: String, @Query("apiKey") apiKey: String): Observable<FlightsResult>
 
     companion object {
 
