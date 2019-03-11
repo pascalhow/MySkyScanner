@@ -1,7 +1,9 @@
-package com.pascalhow.myskyscanner
+package com.pascalhow.myskyscanner.activities.main
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.pascalhow.myskyscanner.R
+import com.pascalhow.myskyscanner.activities.flights.FlightDetailsFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,7 +13,10 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .add(R.id.root_layout, FlightDetailsFragment.newInstance(), FRAGMENT_FLIGHT_DETAILS_LIST)
+                .add(
+                    R.id.root_layout, FlightDetailsFragment.newInstance(),
+                    FRAGMENT_FLIGHT_DETAILS_LIST
+                )
                 .commit()
         }
     }

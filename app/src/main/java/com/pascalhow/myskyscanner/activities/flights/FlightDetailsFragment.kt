@@ -1,4 +1,4 @@
-package com.pascalhow.myskyscanner
+package com.pascalhow.myskyscanner.activities.flights
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.pascalhow.myskyscanner.model.FlightDetails
+import com.pascalhow.myskyscanner.R
 
 class FlightDetailsFragment : Fragment() {
 
@@ -31,7 +31,17 @@ class FlightDetailsFragment : Fragment() {
         (view.findViewById(R.id.flight_details_recycler_view) as RecyclerView).apply {
             layoutManager = LinearLayoutManager(activity)
             adapter = FlightDetailsAdapter(
-                listOf(FlightDetails(), FlightDetails(), FlightDetails(),FlightDetails(), FlightDetails(), FlightDetails(),FlightDetails(), FlightDetails(), FlightDetails())
+                listOf(
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails()
+                )
             )
         }
 
@@ -52,7 +62,9 @@ class FlightDetailsFragment : Fragment() {
             val flightDetailsItemView = LayoutInflater.from(viewGroup.context)
                 .inflate(R.layout.recycler_item_flight_details, viewGroup, false)
 
-            return FlightDetailsViewHolder(flightDetailsItemView)
+            return FlightDetailsViewHolder(
+                flightDetailsItemView
+            )
         }
 
         override fun onBindViewHolder(viewHolder: FlightDetailsViewHolder, position: Int) {

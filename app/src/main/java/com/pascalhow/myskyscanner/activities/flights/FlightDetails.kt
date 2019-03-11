@@ -1,4 +1,4 @@
-package com.pascalhow.myskyscanner.model
+package com.pascalhow.myskyscanner.activities.flights
 
 data class FlightDetails(
     var outboundTime:String = "15:35 - 17:00",
