@@ -1,6 +1,6 @@
 package com.pascalhow.myskyscanner.rest.model
 
-class Result {
+class FlightsResult {
 
     var status: String? = null
     var legs: Array<Legs>? = null
