@@ -1,5 +1,6 @@
 package com.pascalhow.myskyscanner.rest
 
+import com.pascalhow.myskyscanner.activities.search.FlightsSearch
 import com.pascalhow.myskyscanner.rest.model.FlightsResult
 import io.reactivex.Observable
 import retrofit2.Response
@@ -12,18 +13,7 @@ interface SkyScannerApiService {
 
     @FormUrlEncoded
     @POST("pricing/v1.0")
-    fun createSession(
-        @Field("country") country: String,
-        @Field("currency") currency: String,
-        @Field("locale") locale: String,
-        @Field("originPlace") originPlace: String,
-        @Field("destinationPlace") destinationPlace: String,
-        @Field("outboundDate") outboundDate: String,
-        @Field("inboundDate") inboundDate: String,
-        @Field("adults") adults: String,
-        @Field("apiKey") apiKey: String,
-        @Field("locationSchema") locationSchema: String
-    ): Observable<Response<Any>>
+    fun createSession(@FieldMap flightSearchMap: MutableMap<String, String>): Observable<Response<Any>>
 
     @GET
     fun request(@Url sessionUrl: String, @Query("apiKey") apiKey: String): Observable<FlightsResult>
