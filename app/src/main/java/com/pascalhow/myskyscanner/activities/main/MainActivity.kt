@@ -2,11 +2,12 @@ package com.pascalhow.myskyscanner.activities.main
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import com.pascalhow.myskyscanner.R
 import com.pascalhow.myskyscanner.activities.flights.FlightDetailsFragment
+import com.pascalhow.myskyscanner.activities.flights.TripsPresenter
+import com.pascalhow.myskyscanner.activities.flights.TripsViewModel
 import com.pascalhow.myskyscanner.activities.search.FlightsSearch
-import com.pascalhow.myskyscanner.rest.FlightResultsDataParser
+import com.pascalhow.myskyscanner.rest.FlightResultsDataMapper
 import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import com.pascalhow.myskyscanner.rest.RestClient
 import io.reactivex.disposables.Disposable
@@ -63,8 +64,17 @@ class MainActivity : AppCompatActivity() {
             .observeOn(schedulersProvider.mainThread())
             .subscribe(
                 { response ->
-                    val flightResultsDataParser = FlightResultsDataParser(response)
-                    flightResultsDataParser.extractItineraries()
+                    val flightResultsDataParser = FlightResultsDataMapper(response)
+                    val tripsPresenter = TripsPresenter(flightResultsDataParser)
+
+                    val tripViewModelList = ArrayList<TripsViewModel>()
+                    response.itineraries?.forEachIndexed { index, _ ->
+                        tripViewModelList.add(tripsPresenter.getTripViewModel(
+                            response.itineraries?.get(index)?.outboundLegId,
+                            response.itineraries?.get(index)?.inboundLegId)
+                        )
+                    }
+
                     Timber.d(flightResultsDataParser.toString())
                 },
                 { error ->
