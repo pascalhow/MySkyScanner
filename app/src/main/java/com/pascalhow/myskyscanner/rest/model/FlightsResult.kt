@@ -13,6 +13,9 @@ class FlightsResult {
     @SerializedName("Itineraries")
     var itineraries: Array<Itineraries>? = null
 
+    @SerializedName("Segments")
+    var segments: Array<Segments>? = null
+
     @SerializedName("Query")
     var query: Query? = null
 
@@ -28,7 +31,13 @@ class FlightsResult {
     @SerializedName("ServiceQuery")
     var serviceQuery: ServiceQuery? = null
 
+    @SerializedName("Carriers")
+    var carriers: Array<Carriers>? = null
+
+    @SerializedName("Agents")
+    var agents: Array<Places>? = null
+
     override fun toString(): String {
-        return "ClassPojo [Status = $status, Legs = $legs, Itineraries = $itineraries, Query = $query, SessionKey = $sessionKey, Currencies = $currencies, Places = $places, ServiceQuery = $serviceQuery]"
+        return "ClassPojo [Status = $status, Legs = $legs, Itineraries = $itineraries, Segments = $segments, Query = $query, SessionKey = $sessionKey, Currencies = $currencies, Places = $places, ServiceQuery = $serviceQuery, Carriers = $carriers, Agents = $agents]"
     }
 }

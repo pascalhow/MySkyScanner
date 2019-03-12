@@ -7,11 +7,11 @@ class Itineraries {
     @SerializedName("InboundLegId")
     var inboundLegId: String? = null
 
-    @SerializedName("BookingDetailsLink")
-    var bookingDetailsLink: BookingDetailsLink? = null
-
     @SerializedName("OutboundLegId")
     var outboundLegId: String? = null
+
+    @SerializedName("BookingDetailsLink")
+    var bookingDetailsLink: BookingDetailsLink? = null
 
     @SerializedName("PricingOptions")
     var pricingOptions: Array<PricingOptions>? = null

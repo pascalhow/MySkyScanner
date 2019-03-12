@@ -6,12 +6,11 @@ import android.util.Log
 import com.pascalhow.myskyscanner.R
 import com.pascalhow.myskyscanner.activities.flights.FlightDetailsFragment
 import com.pascalhow.myskyscanner.activities.search.FlightsSearch
-import com.pascalhow.myskyscanner.activities.utils.SchedulersProvider
+import com.pascalhow.myskyscanner.rest.FlightResultsDataParser
+import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import com.pascalhow.myskyscanner.rest.RestClient
-import com.pascalhow.myskyscanner.rest.SkyScannerApiService
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import kotlinx.android.synthetic.main.activity_main.flights_search_btn as flightSearchButton
 
 class MainActivity : AppCompatActivity() {
@@ -19,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private var disposable: Disposable? = null
     private lateinit var schedulersProvider: SchedulersProvider
     private lateinit var restClient: RestClient
+    private lateinit var flightsSearchMap: MutableMap<String, String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,16 +36,9 @@ class MainActivity : AppCompatActivity() {
         restClient = RestClient
         schedulersProvider = SchedulersProvider()
 
-        flightSearchButton.text = "Search Flights!"
-        flightSearchButton.setOnClickListener {
-            searchFlights()
-        }
-    }
-
-    private fun searchFlights() {
         val flightsSearch = FlightsSearch()
 
-        val flightSearchMap = mutableMapOf(
+        flightsSearchMap = mutableMapOf(
             "country" to flightsSearch.country,
             "currency" to flightsSearch.currency,
             "locale" to flightsSearch.locale,
@@ -58,16 +51,24 @@ class MainActivity : AppCompatActivity() {
             "locationSchema" to flightsSearch.locationSchema
         )
 
-        restClient.beginSearch(flightSearchMap)
+        flightSearchButton.text = "Search Flights!"
+        flightSearchButton.setOnClickListener {
+            searchFlights()
+        }
+    }
+
+    private fun searchFlights() {
+        restClient.beginSearch(flightsSearchMap)
             .subscribeOn(schedulersProvider.io())
             .observeOn(schedulersProvider.mainThread())
             .subscribe(
                 { response ->
-                    val location = response.currencies
-                    Log.d("Success Session Token", location.toString())
+                    val flightResultsDataParser = FlightResultsDataParser(response)
+                    flightResultsDataParser.extractItineraries()
+                    Timber.d(flightResultsDataParser.toString())
                 },
                 { error ->
-                    Log.d("Error Session Token", error.message)
+                    Timber.e(error)
                 }
             )
     }
