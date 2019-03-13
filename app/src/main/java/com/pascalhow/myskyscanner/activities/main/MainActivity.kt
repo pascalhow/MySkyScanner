@@ -12,6 +12,7 @@ import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import com.pascalhow.myskyscanner.rest.RestClient
 import io.reactivex.disposables.Disposable
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.activity_main.flights_search_btn as flightSearchButton
 
 class MainActivity : AppCompatActivity() {
@@ -60,6 +61,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun searchFlights() {
         restClient.beginSearch(flightsSearchMap)
+            .repeatWhen { it.delay(500, TimeUnit.MILLISECONDS) }
+            .filter { response ->
+                response.status == "UpdatesComplete"
+            }
             .subscribeOn(schedulersProvider.io())
             .observeOn(schedulersProvider.mainThread())
             .subscribe(
@@ -79,6 +84,9 @@ class MainActivity : AppCompatActivity() {
                 },
                 { error ->
                     Timber.e(error)
+                },
+                {
+                    Timber.d("Updates Complete")
                 }
             )
     }
