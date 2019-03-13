@@ -18,7 +18,7 @@ object RestClient {
         return skyScannerApiService.createSession(map)
             .flatMap { response ->
             val sessionUrl = response.headers().get(SESSION_CREATION_HEADER_LOCATION)
-            skyScannerApiService.request(sessionUrl!!, flightsSearch.apiKey)
+            skyScannerApiService.request(sessionUrl!!, flightsSearch.apiKey, pageIndex = "0", pageSize = "10")
         }
     }
 
