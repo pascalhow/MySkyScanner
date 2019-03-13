@@ -9,8 +9,7 @@ class TripsPresenter(private val flightResultsDataMapper: FlightResultsDataMappe
         val legsMap = flightResultsDataMapper.legsMap
         val placesMap = flightResultsDataMapper.placesMap
 
-
-        val outboundTrip = Trip(
+        val outboundFlight = Flight(
             legsMap?.get(outboundLegId)?.departure,
             legsMap?.get(outboundLegId)?.arrival,
             placesMap?.get(legsMap?.get(outboundLegId)?.originStation)?.code,
@@ -20,7 +19,7 @@ class TripsPresenter(private val flightResultsDataMapper: FlightResultsDataMappe
             legsMap?.get(outboundLegId)?.duration
         )
 
-        val inboundTrip = Trip(
+        val inboundFlight = Flight(
             legsMap?.get(inboundLegId)?.departure,
             legsMap?.get(inboundLegId)?.arrival,
             placesMap?.get(legsMap?.get(inboundLegId)?.originStation)?.code,
@@ -30,12 +29,13 @@ class TripsPresenter(private val flightResultsDataMapper: FlightResultsDataMappe
             legsMap?.get(inboundLegId)?.duration
         )
 
-        return TripsViewModel(outboundTrip, inboundTrip, price = "£40")
+        return TripsViewModel(outboundFlight, inboundFlight, price = "£40")
     }
+
 }
 
 data class TripsViewModel(
-    var outboundTrip: Trip,
-    var inboundTrip: Trip,
+    var outboundFlight: Flight,
+    var inboundFlight: Flight,
     var price: String?
 )

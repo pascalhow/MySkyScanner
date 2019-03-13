@@ -1,18 +1,17 @@
 package com.pascalhow.myskyscanner.activities.main
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.pascalhow.myskyscanner.R
 import com.pascalhow.myskyscanner.activities.flights.FlightDetailsFragment
 import com.pascalhow.myskyscanner.activities.flights.TripsPresenter
 import com.pascalhow.myskyscanner.activities.flights.TripsViewModel
 import com.pascalhow.myskyscanner.activities.search.FlightsSearch
 import com.pascalhow.myskyscanner.rest.FlightResultsDataMapper
-import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import com.pascalhow.myskyscanner.rest.RestClient
+import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import io.reactivex.disposables.Disposable
-import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.activity_main.flights_search_btn as flightSearchButton
 
 class MainActivity : AppCompatActivity() {
@@ -20,7 +19,7 @@ class MainActivity : AppCompatActivity() {
     private var disposable: Disposable? = null
     private lateinit var schedulersProvider: SchedulersProvider
     private lateinit var restClient: RestClient
-    private lateinit var flightsSearchMap: MutableMap<String, String>
+    private lateinit var flightsSearchParameters: MutableMap<String, String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         val flightsSearch = FlightsSearch()
 
-        flightsSearchMap = mutableMapOf(
+        flightsSearchParameters = mutableMapOf(
             "country" to flightsSearch.country,
             "currency" to flightsSearch.currency,
             "locale" to flightsSearch.locale,
@@ -55,38 +54,37 @@ class MainActivity : AppCompatActivity() {
 
         flightSearchButton.text = "Search Flights!"
         flightSearchButton.setOnClickListener {
-            searchFlights()
+            searchFlights(flightsSearch)
         }
     }
 
-    private fun searchFlights() {
-        restClient.beginSearch(flightsSearchMap)
-            .repeatWhen { it.delay(500, TimeUnit.MILLISECONDS) }
-            .filter { response ->
-                response.status == "UpdatesComplete"
-            }
+    private fun searchFlights(flightSearch: FlightsSearch) {
+        restClient.getSessionUrl(flightsSearchParameters)
+            .flatMap { url -> restClient.search(url, flightSearch) }
             .subscribeOn(schedulersProvider.io())
             .observeOn(schedulersProvider.mainThread())
             .subscribe(
                 { response ->
-                    val flightResultsDataParser = FlightResultsDataMapper(response)
-                    val tripsPresenter = TripsPresenter(flightResultsDataParser)
+                    val dataMapper = FlightResultsDataMapper(response)
+                    val tripsPresenter = TripsPresenter(dataMapper)
 
                     val tripViewModelList = ArrayList<TripsViewModel>()
                     response.itineraries?.forEachIndexed { index, _ ->
-                        tripViewModelList.add(tripsPresenter.getTripViewModel(
-                            response.itineraries?.get(index)?.outboundLegId,
-                            response.itineraries?.get(index)?.inboundLegId)
+                        tripViewModelList.add(
+                            tripsPresenter.getTripViewModel(
+                                response.itineraries?.get(index)?.outboundLegId,
+                                response.itineraries?.get(index)?.inboundLegId
+                            )
                         )
                     }
 
-                    Timber.d(flightResultsDataParser.toString())
+                    Log.d("Flight Results", tripViewModelList[0].outboundFlight.toString())
                 },
                 { error ->
-                    Timber.e(error)
+                    Log.e("Error Fetching Trips!!!", error.message)
                 },
                 {
-                    Timber.d("Updates Complete")
+                    Log.d("Updates Complete", "Finished Fetching Trips")
                 }
             )
     }

@@ -1,6 +1,6 @@
 package com.pascalhow.myskyscanner.activities.flights
 
-data class Trip(
+data class Flight(
     var departureTime: String?,
     var arrivalTime: String?,
     var origin: String?,
