@@ -2,13 +2,14 @@ package com.pascalhow.myskyscanner.activities.main
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.Toast
+import android.view.*
+import android.widget.TextView
 import com.pascalhow.myskyscanner.R
-import com.pascalhow.myskyscanner.activities.flights.FlightDetailsFragment
+import com.pascalhow.myskyscanner.activities.flights.FlightDetails
 import com.pascalhow.myskyscanner.activities.flights.TripsPresenter
 import com.pascalhow.myskyscanner.activities.flights.TripsViewModel
 import com.pascalhow.myskyscanner.activities.search.FlightsSearch
@@ -16,16 +17,17 @@ import com.pascalhow.myskyscanner.rest.FlightResultsDataMapper
 import com.pascalhow.myskyscanner.rest.RestClient
 import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import io.reactivex.disposables.Disposable
-import kotlinx.android.synthetic.main.activity_main.flights_search_btn as flightSearchButton
-
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var flightsSearch: FlightsSearch
     private lateinit var toolbar: Toolbar
     private var disposable: Disposable? = null
     private lateinit var schedulersProvider: SchedulersProvider
     private lateinit var restClient: RestClient
     private lateinit var flightsSearchParameters: MutableMap<String, String>
+    private lateinit var flightDetailsCount: TextView
+    private lateinit var sortAndFilter: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,20 +35,11 @@ class MainActivity : AppCompatActivity() {
 
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .add(
-                    R.id.root_layout, FlightDetailsFragment.newInstance(),
-                    FRAGMENT_FLIGHT_DETAILS_LIST
-                )
-                .commit()
-        }
-
+        flightsSearch = FlightsSearch()
         restClient = RestClient
         schedulersProvider = SchedulersProvider()
-
-        val flightsSearch = FlightsSearch()
 
         flightsSearchParameters = mutableMapOf(
             "country" to flightsSearch.country,
@@ -61,14 +54,31 @@ class MainActivity : AppCompatActivity() {
             "locationSchema" to flightsSearch.locationSchema
         )
 
-        flightSearchButton.text = "Search Flights!"
-        flightSearchButton.setOnClickListener {
-            searchFlights(flightsSearch)
+        flightDetailsCount = findViewById(R.id.flight_details_results_count)
+        flightDetailsCount.text = "365 or 366 results"
+
+        sortAndFilter = findViewById(R.id.sort_and_filter)
+        sortAndFilter.text = "SORT & FILTER"
+
+        (findViewById<RecyclerView>(R.id.flight_details_recycler_view)).apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = FlightDetailsAdapter(
+                listOf(
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails(),
+                    FlightDetails()
+                )
+            )
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
@@ -78,7 +88,7 @@ class MainActivity : AppCompatActivity() {
 
         return when (id) {
             R.id.action_search -> {
-                Toast.makeText(this@MainActivity, "Action clicked", Toast.LENGTH_LONG).show()
+                searchFlights(flightsSearch)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -87,7 +97,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchFlights(flightSearch: FlightsSearch) {
-        restClient.getSessionUrl(flightsSearchParameters)
+        disposable= restClient.getSessionUrl(flightsSearchParameters)
             .flatMap { url -> restClient.search(url, flightSearch) }
             .subscribeOn(schedulersProvider.io())
             .observeOn(schedulersProvider.mainThread())
@@ -120,6 +130,55 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         disposable?.dispose()
+    }
+
+    class FlightDetailsAdapter(
+        private val flightDataSet: List<FlightDetails>
+    ) : RecyclerView.Adapter<FlightDetailsAdapter.FlightDetailsViewHolder>() {
+
+        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): FlightDetailsViewHolder {
+            val flightDetailsItemView = LayoutInflater.from(viewGroup.context)
+                .inflate(R.layout.recycler_item_flight_details, viewGroup, false)
+
+            return FlightDetailsViewHolder(
+                flightDetailsItemView
+            )
+        }
+
+        override fun onBindViewHolder(viewHolder: FlightDetailsViewHolder, position: Int) {
+            val flightDetails = flightDataSet[position]
+            viewHolder.apply {
+                outboundTime.text = flightDetails.outboundTime
+                outboundAirline.text = flightDetails.outboundAirline
+                outboundFlightType.text = flightDetails.outboundFlightType
+                outboundFlightDuration.text = flightDetails.outboundFlightDuration
+                inboundTime.text = flightDetails.inboundTime
+                inboundAirline.text = flightDetails.inboundAirline
+                inboundFlightType.text = flightDetails.inboundFlightType
+                inboundFlightDuration.text = flightDetails.inboundFlightDuration
+                rating.text = flightDetails.rating
+                price.text = flightDetails.price
+                airlineUrl.text = flightDetails.airlineUrl
+            }
+        }
+
+        override fun getItemCount(): Int {
+            return flightDataSet.size
+        }
+
+        class FlightDetailsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            var outboundTime: TextView = itemView.findViewById(R.id.outbound_flight_time)
+            var outboundAirline: TextView = itemView.findViewById(R.id.outbound_flight_airline)
+            var outboundFlightType: TextView = itemView.findViewById(R.id.outbound_flight_type)
+            var outboundFlightDuration: TextView = itemView.findViewById(R.id.outbound_flight_duration)
+            var inboundTime: TextView = itemView.findViewById(R.id.inbound_flight_time)
+            var inboundAirline: TextView = itemView.findViewById(R.id.inbound_flight_airline)
+            var inboundFlightType: TextView = itemView.findViewById(R.id.inbound_flight_type)
+            var inboundFlightDuration: TextView = itemView.findViewById(R.id.inbound_flight_duration)
+            var rating: TextView = itemView.findViewById(R.id.flight_rating)
+            var price: TextView = itemView.findViewById(R.id.price)
+            var airlineUrl: TextView = itemView.findViewById(R.id.airline_url)
+        }
     }
 
     companion object {
