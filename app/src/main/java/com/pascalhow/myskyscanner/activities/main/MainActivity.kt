@@ -2,7 +2,11 @@ package com.pascalhow.myskyscanner.activities.main
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
 import com.pascalhow.myskyscanner.R
 import com.pascalhow.myskyscanner.activities.flights.FlightDetailsFragment
 import com.pascalhow.myskyscanner.activities.flights.TripsPresenter
@@ -14,8 +18,10 @@ import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.flights_search_btn as flightSearchButton
 
+
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var toolbar: Toolbar
     private var disposable: Disposable? = null
     private lateinit var schedulersProvider: SchedulersProvider
     private lateinit var restClient: RestClient
@@ -24,6 +30,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -56,6 +65,25 @@ class MainActivity : AppCompatActivity() {
         flightSearchButton.setOnClickListener {
             searchFlights(flightsSearch)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+
+        return when (id) {
+            R.id.action_search -> {
+                Toast.makeText(this@MainActivity, "Action clicked", Toast.LENGTH_LONG).show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+
     }
 
     private fun searchFlights(flightSearch: FlightsSearch) {
