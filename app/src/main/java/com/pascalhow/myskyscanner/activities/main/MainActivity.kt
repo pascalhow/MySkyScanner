@@ -1,81 +1,79 @@
 package com.pascalhow.myskyscanner.activities.main
 
+import android.graphics.PorterDuff
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.*
 import android.widget.TextView
 import com.pascalhow.myskyscanner.R
-import com.pascalhow.myskyscanner.activities.flights.FlightDetails
-import com.pascalhow.myskyscanner.activities.flights.TripsPresenter
-import com.pascalhow.myskyscanner.activities.flights.TripsViewModel
-import com.pascalhow.myskyscanner.activities.search.FlightsSearch
-import com.pascalhow.myskyscanner.rest.FlightResultsDataMapper
-import com.pascalhow.myskyscanner.rest.RestClient
+import com.pascalhow.myskyscanner.activities.flights.FlightDetailsContract
+import com.pascalhow.myskyscanner.activities.flights.FlightDetailsInteractor
+import com.pascalhow.myskyscanner.activities.flights.FlightDetailsPresenter
+import com.pascalhow.myskyscanner.activities.flights.TripViewModel
+import com.pascalhow.myskyscanner.activities.search.FlightsCriteria
 import com.pascalhow.myskyscanner.utils.SchedulersProvider
-import io.reactivex.disposables.Disposable
+import kotlinx.android.synthetic.main.activity_main.toolbar
+import kotlinx.android.synthetic.main.activity_main.flight_details_recycler_view as flightsRecyclerView
+import kotlinx.android.synthetic.main.activity_main.flight_details_results_count as flightDetailsCountTextView
+import kotlinx.android.synthetic.main.activity_main.progress_bar as progressBar
+import kotlinx.android.synthetic.main.activity_main.sort_and_filter as sortAndFilterTextView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), FlightDetailsContract.View {
 
-    private lateinit var flightsSearch: FlightsSearch
-    private lateinit var toolbar: Toolbar
-    private var disposable: Disposable? = null
+    private val flightsCriteria = FlightsCriteria()
+    private lateinit var flightsCriteriaParameters: MutableMap<String, String>
+    private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var tripsAdapter: TripsAdapter
     private lateinit var schedulersProvider: SchedulersProvider
-    private lateinit var restClient: RestClient
-    private lateinit var flightsSearchParameters: MutableMap<String, String>
-    private lateinit var flightDetailsCount: TextView
-    private lateinit var sortAndFilter: TextView
+    private lateinit var flightDetailsInteractor: FlightDetailsInteractor
+    private lateinit var flightDetailsPresenter: FlightDetailsPresenter
+
+    override fun onResume() {
+        super.onResume()
+        flightDetailsPresenter.startPresenting()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        flightsSearch = FlightsSearch()
-        restClient = RestClient
-        schedulersProvider = SchedulersProvider()
-
-        flightsSearchParameters = mutableMapOf(
-            "country" to flightsSearch.country,
-            "currency" to flightsSearch.currency,
-            "locale" to flightsSearch.locale,
-            "originPlace" to flightsSearch.originPlace,
-            "destinationPlace" to flightsSearch.destinationPlace,
-            "outboundDate" to flightsSearch.outboundDate,
-            "inboundDate" to flightsSearch.inboundDate,
-            "adults" to flightsSearch.adults,
-            "apiKey" to flightsSearch.apiKey,
-            "locationSchema" to flightsSearch.locationSchema
+        flightsCriteriaParameters = mutableMapOf(
+            "country" to flightsCriteria.country,
+            "currency" to flightsCriteria.currency,
+            "locale" to flightsCriteria.locale,
+            "originPlace" to flightsCriteria.originPlace,
+            "destinationPlace" to flightsCriteria.destinationPlace,
+            "outboundDate" to flightsCriteria.outboundDate,
+            "inboundDate" to flightsCriteria.inboundDate,
+            "adults" to flightsCriteria.adults,
+            "apiKey" to flightsCriteria.apiKey,
+            "locationSchema" to flightsCriteria.locationSchema
         )
 
-        flightDetailsCount = findViewById(R.id.flight_details_results_count)
-        flightDetailsCount.text = "365 or 366 results"
+        schedulersProvider = SchedulersProvider()
+        flightDetailsInteractor = FlightDetailsInteractor()
+        flightDetailsPresenter = FlightDetailsPresenter(this, flightDetailsInteractor, schedulersProvider)
 
-        sortAndFilter = findViewById(R.id.sort_and_filter)
-        sortAndFilter.text = "SORT & FILTER"
+        linearLayoutManager = LinearLayoutManager(this)
+        tripsAdapter = TripsAdapter()
+        flightsRecyclerView.layoutManager = linearLayoutManager
+        flightsRecyclerView.adapter = tripsAdapter
 
-        (findViewById<RecyclerView>(R.id.flight_details_recycler_view)).apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = FlightDetailsAdapter(
-                listOf(
-                    FlightDetails(),
-                    FlightDetails(),
-                    FlightDetails(),
-                    FlightDetails(),
-                    FlightDetails(),
-                    FlightDetails(),
-                    FlightDetails(),
-                    FlightDetails(),
-                    FlightDetails()
-                )
+        progressBar.indeterminateDrawable
+            .setColorFilter(
+                ContextCompat.getColor(this, R.color.colorPrimary),
+                PorterDuff.Mode.SRC_IN
             )
-        }
+
+        flightDetailsCountTextView.text = "365 or 366 results"
+        sortAndFilterTextView.text = "SORT & FILTER"
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -88,7 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         return when (id) {
             R.id.action_search -> {
-                searchFlights(flightsSearch)
+                flightDetailsPresenter.search(flightsCriteriaParameters)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -96,77 +94,71 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun searchFlights(flightSearch: FlightsSearch) {
-        disposable= restClient.getSessionUrl(flightsSearchParameters)
-            .flatMap { url -> restClient.search(url, flightSearch) }
-            .subscribeOn(schedulersProvider.io())
-            .observeOn(schedulersProvider.mainThread())
-            .subscribe(
-                { response ->
-                    val dataMapper = FlightResultsDataMapper(response)
-                    val tripsPresenter = TripsPresenter(dataMapper)
+    override fun showLoading() {
+        progressBar.visibility = View.VISIBLE
+    }
 
-                    val tripViewModelList = ArrayList<TripsViewModel>()
-                    response.itineraries?.forEachIndexed { index, _ ->
-                        tripViewModelList.add(
-                            tripsPresenter.getTripViewModel(
-                                response.itineraries?.get(index)?.outboundLegId,
-                                response.itineraries?.get(index)?.inboundLegId
-                            )
-                        )
-                    }
+    override fun hideLoading() {
+        progressBar.visibility = View.GONE
+    }
 
-                    Log.d("Flight Results", tripViewModelList[0].outboundFlight.toString())
-                },
-                { error ->
-                    Log.e("Error Fetching Trips!!!", error.message)
-                },
-                {
-                    Log.d("Updates Complete", "Finished Fetching Trips")
-                }
-            )
+    override fun loadFlightsList(tripsList: List<TripViewModel>) {
+        tripsAdapter.setItemList(tripsList)
+    }
+
+    override fun showFlightsList() {
+        flightsRecyclerView.visibility = View.VISIBLE
+    }
+
+    override fun hideFlightsList() {
+        flightsRecyclerView.visibility = View.GONE
     }
 
     override fun onPause() {
         super.onPause()
-        disposable?.dispose()
+        flightDetailsPresenter.stopPresenting()
     }
 
-    class FlightDetailsAdapter(
-        private val flightDataSet: List<FlightDetails>
-    ) : RecyclerView.Adapter<FlightDetailsAdapter.FlightDetailsViewHolder>() {
+    class TripsAdapter : RecyclerView.Adapter<TripsAdapter.TripsViewHolder>() {
 
-        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): FlightDetailsViewHolder {
+        private var tripDataSet: List<TripViewModel> = ArrayList()
+
+        override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): TripsViewHolder {
             val flightDetailsItemView = LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.recycler_item_flight_details, viewGroup, false)
+                .inflate(R.layout.recycler_item_trips_details, viewGroup, false)
 
-            return FlightDetailsViewHolder(
+            return TripsViewHolder(
                 flightDetailsItemView
             )
         }
 
-        override fun onBindViewHolder(viewHolder: FlightDetailsViewHolder, position: Int) {
-            val flightDetails = flightDataSet[position]
+        fun setItemList(tripsList: List<TripViewModel>) {
+            tripDataSet = tripsList
+            notifyDataSetChanged()
+        }
+
+        override fun onBindViewHolder(viewHolder: TripsViewHolder, position: Int) {
+            val trips = tripDataSet[position]
             viewHolder.apply {
-                outboundTime.text = flightDetails.outboundTime
-                outboundAirline.text = flightDetails.outboundAirline
-                outboundFlightType.text = flightDetails.outboundFlightType
-                outboundFlightDuration.text = flightDetails.outboundFlightDuration
-                inboundTime.text = flightDetails.inboundTime
-                inboundAirline.text = flightDetails.inboundAirline
-                inboundFlightType.text = flightDetails.inboundFlightType
-                inboundFlightDuration.text = flightDetails.inboundFlightDuration
-                rating.text = flightDetails.rating
-                price.text = flightDetails.price
-                airlineUrl.text = flightDetails.airlineUrl
+                outboundTime.text = trips.outboundTime
+                outboundAirline.text = trips.outboundAirline
+                outboundFlightType.text = trips.outboundFlightType
+                outboundFlightDuration.text = trips.outboundFlightDuration
+                inboundTime.text = trips.inboundTime
+                inboundAirline.text = trips.inboundAirline
+                inboundFlightType.text = trips.inboundFlightType
+                inboundFlightDuration.text = trips.inboundFlightDuration
+                rating.text = trips.rating
+                price.text = trips.price
+                airlineUrl.text = trips.airlineUrl
             }
         }
 
         override fun getItemCount(): Int {
-            return flightDataSet.size
+            return tripDataSet.size
         }
 
-        class FlightDetailsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        class TripsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             var outboundTime: TextView = itemView.findViewById(R.id.outbound_flight_time)
             var outboundAirline: TextView = itemView.findViewById(R.id.outbound_flight_airline)
             var outboundFlightType: TextView = itemView.findViewById(R.id.outbound_flight_type)
@@ -181,7 +173,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    companion object {
-        const val FRAGMENT_FLIGHT_DETAILS_LIST = "fragment flight details list"
-    }
 }

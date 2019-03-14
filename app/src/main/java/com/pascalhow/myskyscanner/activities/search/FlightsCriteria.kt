@@ -1,6 +1,6 @@
 package com.pascalhow.myskyscanner.activities.search
 
-data class FlightsSearch(
+data class FlightsCriteria(
     var country: String = "UK",
     var currency: String = "GBP",
     var locale: String = "en-GB",

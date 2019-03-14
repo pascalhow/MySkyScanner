@@ -4,7 +4,7 @@ import com.pascalhow.myskyscanner.rest.FlightResultsDataMapper
 
 class TripsPresenter(private val flightResultsDataMapper: FlightResultsDataMapper) {
 
-    fun getTripViewModel(outboundLegId: String?, inboundLegId: String?): TripsViewModel {
+    fun getTripDataModel(outboundLegId: String?, inboundLegId: String?): TripDataModel {
         flightResultsDataMapper.buildMaps()
         val legsMap = flightResultsDataMapper.legsMap
         val placesMap = flightResultsDataMapper.placesMap
@@ -29,13 +29,9 @@ class TripsPresenter(private val flightResultsDataMapper: FlightResultsDataMappe
             legsMap?.get(inboundLegId)?.duration
         )
 
-        return TripsViewModel(outboundFlight, inboundFlight, price = "£40")
+        return TripDataModel(outboundFlight, inboundFlight, price = "£40")
     }
 
 }
 
-data class TripsViewModel(
-    var outboundFlight: Flight,
-    var inboundFlight: Flight,
-    var price: String?
-)
+
