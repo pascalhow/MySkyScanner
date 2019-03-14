@@ -68,7 +68,7 @@ class FlightDetailsPresenter(
 
             val inboundFlightType = dataModel.inboundFlight.stops ?: "Direct"
             val inboundFlightDuration = dataModel.inboundFlight.duration?.formatDuration(DURATION_FORMAT)
-            val rating = "10"
+            val rating = "10.0"
             val price = dataModel.price
             val airlineUrl = "airline.com"
 

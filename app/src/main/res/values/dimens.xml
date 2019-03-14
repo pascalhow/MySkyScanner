@@ -7,8 +7,15 @@
     <dimen name="card_view_default_elevation">8dp</dimen>
     <dimen name="card_view_default_corner_radius">4dp</dimen>
     <dimen name="recycler_margin">8dp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_medium">16sp</dimen>
+
+    <!-- Results Header -->
+    <dimen name="result_header_text_size">@dimen/text_size_medium</dimen>
 
     <!-- Item Flight Details -->
+    <dimen name="flight_detail_text_size_small">@dimen/text_size_small</dimen>
+    <dimen name="flight_detail_text_size_medium">@dimen/text_size_medium</dimen>
     <dimen name="flight_detail_header_padding">@dimen/layout_medium_padding</dimen>
     <dimen name="flight_detail_card_view_elevation">@dimen/cardview_default_elevation</dimen>
     <dimen name="flight_detail_card_view_corner_radius">@dimen/card_view_default_corner_radius</dimen>

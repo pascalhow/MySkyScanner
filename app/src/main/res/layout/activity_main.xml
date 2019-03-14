@@ -40,6 +40,8 @@
                     android:layout_gravity="center_vertical"
                     android:gravity="start"
                     android:id="@+id/flight_details_results_count"
+                    android:textSize="@dimen/result_header_text_size"
+                    android:textColor="@android:color/black"
                     tools:text="365 of 365 results"/>
 
             <TextView
@@ -49,6 +51,8 @@
                     android:layout_gravity="center_vertical"
                     android:gravity="end"
                     android:id="@+id/sort_and_filter"
+                    android:textSize="@dimen/result_header_text_size"
+                    android:textColor="@android:color/black"
                     tools:text="SORT &amp; FILTERS"/>
         </LinearLayout>
     </android.support.v7.widget.CardView>

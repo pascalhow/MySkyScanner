@@ -18,6 +18,8 @@ import kotlinx.android.synthetic.main.activity_main.flight_details_recycler_view
 import kotlinx.android.synthetic.main.activity_main.flight_details_results_count as flightDetailsCountTextView
 import kotlinx.android.synthetic.main.activity_main.progress_bar as progressBar
 import kotlinx.android.synthetic.main.activity_main.sort_and_filter as sortAndFilterTextView
+import android.support.v7.app.AlertDialog
+
 
 class MainActivity : AppCompatActivity(), FlightDetailsContract.View {
 
@@ -38,7 +40,12 @@ class MainActivity : AppCompatActivity(), FlightDetailsContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        toolbar.run {
+            title = "${flightsCriteria.originPlace} - ${flightsCriteria.destinationPlace}"
+            subtitle = "12 Nov - 16 Nov, 1 adult, economy"
+        }
         setSupportActionBar(toolbar)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         flightsCriteriaParameters = mutableMapOf(
@@ -69,8 +76,8 @@ class MainActivity : AppCompatActivity(), FlightDetailsContract.View {
                 PorterDuff.Mode.SRC_IN
             )
 
-        flightDetailsCountTextView.text = "365 or 365 results"
-        sortAndFilterTextView.text = "SORT & FILTER"
+        flightDetailsCountTextView.text = getString(R.string.flight_details_count)
+        sortAndFilterTextView.text = getString(R.string.flight_details_sort_and_filter)
 
     }
 
@@ -84,8 +91,20 @@ class MainActivity : AppCompatActivity(), FlightDetailsContract.View {
 
         return when (id) {
             R.id.action_search -> {
-                tripsAdapter.clearItemList()
-                flightDetailsPresenter.search(flightsCriteriaParameters)
+                val builder = AlertDialog.Builder(this).apply {
+                    setMessage("Alert")
+                    setTitle("Warning")
+                    setPositiveButton("OK") { _, _ ->
+                        tripsAdapter.clearItemList()
+                        flightDetailsPresenter.search(flightsCriteriaParameters)
+                    }
+                    setNegativeButton("Cancel") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+
+                }
+                val alertDialog = builder.create()
+                alertDialog.show()
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -44,6 +44,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/outbound_flight_time"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/flight_detail_text_size_medium"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentLeft="true"
@@ -55,6 +58,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/outbound_flight_airline"
+                        android:textSize="@dimen/text_size_small"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentLeft="true"
@@ -67,6 +71,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/outbound_flight_type"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/flight_detail_text_size_medium"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
@@ -76,9 +83,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/outbound_flight_duration"
+                        android:textSize="@dimen/text_size_small"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
+                        android:layout_below="@id/outbound_flight_type"
                         tools:text="outbound flight duration"/>
             </RelativeLayout>
         </LinearLayout>
@@ -110,6 +119,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/inbound_flight_time"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/flight_detail_text_size_medium"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentLeft="true"
@@ -121,17 +133,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/inbound_flight_airline"
+                        android:textSize="@dimen/text_size_small"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentLeft="true"
                         android:layout_toStartOf="@+id/inbound_flight_duration"
                         android:layout_toLeftOf="@+id/inbound_flight_duration"
+                        android:layout_below="@id/inbound_flight_time"
                         tools:text="inbound flight airline"/>
 
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/inbound_flight_type"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/flight_detail_text_size_medium"
                         android:layout_alignParentTop="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
@@ -141,9 +158,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/inbound_flight_duration"
+                        android:textSize="@dimen/text_size_small"
                         android:layout_alignParentBottom="true"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
+                        android:layout_below="@id/inbound_flight_type"
                         tools:text="inbound flight duration"/>
             </RelativeLayout>
         </LinearLayout>
@@ -174,6 +193,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/flight_rating"
                     android:textColor="@android:color/black"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/flight_detail_text_size_medium"
                     android:layout_toRightOf="@+id/flight_smiley"
                     android:layout_toEndOf="@+id/flight_smiley"
                     android:layout_centerInParent="true"
@@ -189,6 +210,9 @@
                         android:layout_toRightOf="@+id/flight_rating"
                         android:layout_toEndOf="@+id/flight_rating"
                         android:gravity="end"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/flight_detail_text_size_medium"
                         android:id="@+id/price"
                         tools:text="£40"/>
 
@@ -202,6 +226,7 @@
                         android:layout_toEndOf="@+id/flight_rating"
                         android:gravity="end"
                         android:id="@+id/airline_url"
+                        android:textSize="@dimen/text_size_small"
                         tools:text="via easyJet.com"/>
         </RelativeLayout>
     </LinearLayout>
