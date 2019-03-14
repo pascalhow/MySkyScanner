@@ -6,26 +6,46 @@ import io.reactivex.Observable
 
 class FlightDetailsInteractor {
 
-    private val restClient: RestClient = RestClient
+    private val restClient = RestClient
 
-    fun getTripDataModel(flightCriteriaParameters: MutableMap<String, String>): Observable<List<TripDataModel>> {
+    fun getTripDataModelList(flightCriteriaParameters: MutableMap<String, String>): Observable<List<TripDataModel>> {
         return restClient.getSessionUrl(flightCriteriaParameters)
-            .flatMap { url -> restClient.search(url, flightCriteriaParameters["apiKey"]!!) }
+            .flatMap { url -> restClient.search(url, flightCriteriaParameters[RestClient.KEY_API_KEY]!!) }
             .map { flightData -> createTripDataModelDataSet(flightData) }
     }
 
     private fun createTripDataModelDataSet(flightData: FlightData): List<TripDataModel> {
-        val tripsPresenter = TripsPresenter(flightData.flightResultsDataMapper)
         val tripDataModelList = ArrayList<TripDataModel>()
+        val legsMap = flightData.flightResultsDataMapper.legsMap
+        val placesMap = flightData.flightResultsDataMapper.placesMap
+        val carriersMap = flightData.flightResultsDataMapper.carriersMap
 
         flightData.itinerariesList?.forEach { itineraries ->
+            val outboundFlight = Flight(
+                legsMap?.get(itineraries.outboundLegId)?.departure,
+                legsMap?.get(itineraries.outboundLegId)?.arrival,
+                placesMap?.get(legsMap?.get(itineraries.outboundLegId)?.originStation)?.code,
+                placesMap?.get(legsMap?.get(itineraries.outboundLegId)?.destinationStation)?.code,
+                carriersMap?.get(legsMap?.get(itineraries.outboundLegId)?.carriers?.get(0))?.name,
+                legsMap?.get(itineraries.outboundLegId)?.stops?.getOrNull(0),
+                legsMap?.get(itineraries.outboundLegId)?.duration
+            )
+
+            val inboundFlight = Flight(
+                legsMap?.get(itineraries.inboundLegId)?.departure,
+                legsMap?.get(itineraries.inboundLegId)?.arrival,
+                placesMap?.get(legsMap?.get(itineraries.inboundLegId)?.originStation)?.code,
+                placesMap?.get(legsMap?.get(itineraries.inboundLegId)?.destinationStation)?.code,
+                carriersMap?.get(legsMap?.get(itineraries.inboundLegId)?.carriers?.get(0))?.name,
+                legsMap?.get(itineraries.inboundLegId)?.stops?.getOrNull(0),
+                legsMap?.get(itineraries.inboundLegId)?.duration
+            )
+
             tripDataModelList.add(
-                tripsPresenter.getTripDataModel(
-                    itineraries.outboundLegId,
-                    itineraries.inboundLegId
-                )
+                TripDataModel(outboundFlight, inboundFlight, "£40")
             )
         }
         return tripDataModelList
     }
+
 }

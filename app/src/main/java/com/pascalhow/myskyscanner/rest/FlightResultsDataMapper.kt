@@ -1,24 +1,23 @@
 package com.pascalhow.myskyscanner.rest
 
-import com.pascalhow.myskyscanner.rest.model.FlightsResult
-import com.pascalhow.myskyscanner.rest.model.Legs
-import com.pascalhow.myskyscanner.rest.model.Places
-import com.pascalhow.myskyscanner.rest.model.Segments
+import com.pascalhow.myskyscanner.rest.model.*
 
 
-class FlightResultsDataMapper(private val flightResult: FlightsResult) {
+class FlightResultsDataMapper {
 
     var segmentsMap: MutableMap<String, Segments>? = null
     var legsMap: MutableMap<String, Legs>? = null
     var placesMap: MutableMap<String, Places>? = null
+    var carriersMap: MutableMap<String, Carriers>? = null
 
-    fun buildMaps() {
-        segmentsMap = buildSegmentsMap()
-        legsMap = buildLegsMap()
-        placesMap = buildPlacesMap()
+    fun buildMaps(flightResult: FlightsResult) {
+        segmentsMap = buildSegmentsMap(flightResult)
+        legsMap = buildLegsMap(flightResult)
+        placesMap = buildPlacesMap(flightResult)
+        carriersMap = buildCarriersMap(flightResult)
     }
 
-    private fun buildLegsMap(): MutableMap<String, Legs>? {
+    private fun buildLegsMap(flightResult: FlightsResult): MutableMap<String, Legs>? {
         val legsMap: MutableMap<String, Legs>? = HashMap()
 
         flightResult.legs?.forEach { leg ->
@@ -29,7 +28,7 @@ class FlightResultsDataMapper(private val flightResult: FlightsResult) {
         return legsMap
     }
 
-    private fun buildSegmentsMap(): MutableMap<String, Segments>? {
+    private fun buildSegmentsMap(flightResult: FlightsResult): MutableMap<String, Segments>? {
         val segmentsMap: MutableMap<String, Segments>? = HashMap()
 
         flightResult.segments?.forEach { segment ->
@@ -40,7 +39,7 @@ class FlightResultsDataMapper(private val flightResult: FlightsResult) {
         return segmentsMap
     }
 
-    private fun buildPlacesMap(): MutableMap<String, Places>? {
+    private fun buildPlacesMap(flightResult: FlightsResult): MutableMap<String, Places>? {
         val placesMap: MutableMap<String, Places>? = HashMap()
 
         flightResult.places?.forEach { place ->
@@ -51,5 +50,15 @@ class FlightResultsDataMapper(private val flightResult: FlightsResult) {
         return placesMap
     }
 
+    private fun buildCarriersMap(flightResult: FlightsResult): MutableMap<String, Carriers>? {
+        val carriersMap: MutableMap<String, Carriers>? = HashMap()
+
+        flightResult.carriers?.forEach { carrier ->
+            carrier.id?.let { id ->
+                carriersMap?.put(id, carrier)
+            }
+        }
+        return carriersMap
+    }
 
 }
