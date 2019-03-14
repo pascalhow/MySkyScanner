@@ -7,7 +7,7 @@ interface FlightDetailsContract {
         fun hideLoading()
         fun showFlightsList()
         fun hideFlightsList()
-        fun loadFlightsList(tripsList: List<TripViewModel>)
+        fun loadFlightsList(tripsList: ArrayList<TripViewModel>)
     }
 
     interface Presenter {

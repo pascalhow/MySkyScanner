@@ -4,9 +4,7 @@ import com.pascalhow.myskyscanner.rest.RestClient
 import com.pascalhow.myskyscanner.rest.RestClient.FlightData
 import io.reactivex.Observable
 
-class FlightDetailsInteractor {
-
-    private val restClient = RestClient
+class FlightDetailsInteractor(private val restClient: RestClient) {
 
     fun getTripDataModelList(flightCriteriaParameters: MutableMap<String, String>): Observable<List<TripDataModel>> {
         return restClient.getSessionUrl(flightCriteriaParameters)
@@ -22,6 +20,7 @@ class FlightDetailsInteractor {
 
         flightData.itinerariesList?.forEach { itineraries ->
             val outboundFlight = Flight(
+                carriersMap?.get(legsMap?.get(itineraries.outboundLegId)?.carriers?.get(0))?.imageUrl,
                 legsMap?.get(itineraries.outboundLegId)?.departure,
                 legsMap?.get(itineraries.outboundLegId)?.arrival,
                 placesMap?.get(legsMap?.get(itineraries.outboundLegId)?.originStation)?.code,
@@ -32,6 +31,7 @@ class FlightDetailsInteractor {
             )
 
             val inboundFlight = Flight(
+                carriersMap?.get(legsMap?.get(itineraries.inboundLegId)?.carriers?.get(0))?.imageUrl,
                 legsMap?.get(itineraries.inboundLegId)?.departure,
                 legsMap?.get(itineraries.inboundLegId)?.arrival,
                 placesMap?.get(legsMap?.get(itineraries.inboundLegId)?.originStation)?.code,
@@ -41,8 +41,10 @@ class FlightDetailsInteractor {
                 legsMap?.get(itineraries.inboundLegId)?.duration
             )
 
+            val price = itineraries.pricingOptions?.get(0)?.price
+
             tripDataModelList.add(
-                TripDataModel(outboundFlight, inboundFlight, "£40")
+                TripDataModel(outboundFlight, inboundFlight, "£$price")
             )
         }
         return tripDataModelList

@@ -1,6 +1,7 @@
 package com.pascalhow.myskyscanner.activities.flights
 
 data class Flight(
+    var imageUrl: String?,
     var departureTime: String?,
     var arrivalTime: String?,
     var origin: String?,
@@ -17,10 +18,12 @@ data class TripDataModel(
 )
 
 data class TripViewModel(
+    var outboundImageUrl: String?,
     var outboundTime : String?,
     var outboundAirline : String?,
     var outboundFlightType : String?,
     var outboundFlightDuration : String?,
+    var inboundImageUrl: String?,
     var inboundTime : String?,
     var inboundAirline : String?,
     var inboundFlightType : String?,

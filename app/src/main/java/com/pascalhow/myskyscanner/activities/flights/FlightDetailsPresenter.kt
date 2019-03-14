@@ -39,10 +39,12 @@ class FlightDetailsPresenter(
             )
     }
 
-    private fun getTripViewModelList(tripDataModelList: List<TripDataModel>): List<TripViewModel> {
+    private fun getTripViewModelList(tripDataModelList: List<TripDataModel>): ArrayList<TripViewModel> {
         val tripViewModelList = ArrayList<TripViewModel>()
 
         tripDataModelList.forEach { dataModel ->
+            val outBoundImageUrl = dataModel.outboundFlight.imageUrl
+
             val outboundDepartureTime = dataModel.outboundFlight.departureTime?.formatTime(TIME_FORMAT)
             val outboundArrivalTime = dataModel.outboundFlight.arrivalTime?.formatTime(TIME_FORMAT)
             val outboundTime = "$outboundDepartureTime - $outboundArrivalTime"
@@ -53,6 +55,8 @@ class FlightDetailsPresenter(
 
             val outboundFlightType = dataModel.outboundFlight.stops ?: "Direct"
             val outboundFlightDuration = dataModel.outboundFlight.duration?.formatDuration(DURATION_FORMAT)
+
+            val inBoundImageUrl = dataModel.inboundFlight.imageUrl
 
             val inboundDepartureTime = dataModel.inboundFlight.departureTime?.formatTime(TIME_FORMAT)
             val inboundArrivalTime = dataModel.inboundFlight.arrivalTime?.formatTime(TIME_FORMAT)
@@ -69,10 +73,12 @@ class FlightDetailsPresenter(
             val airlineUrl = "airline.com"
 
             val tripViewModel = TripViewModel(
+                outBoundImageUrl,
                 outboundTime,
                 outboundAirline,
                 outboundFlightType,
                 outboundFlightDuration,
+                inBoundImageUrl,
                 inboundTime,
                 inboundAirline,
                 inboundFlightType,
