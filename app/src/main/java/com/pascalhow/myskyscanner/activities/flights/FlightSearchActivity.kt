@@ -1,4 +1,4 @@
-package com.pascalhow.myskyscanner.activities.main
+package com.pascalhow.myskyscanner.activities.flights
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -7,10 +7,10 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.pascalhow.myskyscanner.R
-import com.pascalhow.myskyscanner.activities.flights.*
 import com.pascalhow.myskyscanner.activities.toolbar.ToolBarPresenter
 import com.pascalhow.myskyscanner.activities.toolbar.ToolbarContract
 import com.pascalhow.myskyscanner.rest.RestClient
+import com.pascalhow.myskyscanner.utils.FlightsSchedulersProvider
 import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import com.pascalhow.myskyscanner.utils.setColour
 import kotlinx.android.synthetic.main.activity_main.toolbar
@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.activity_main.progress_bar as progressBar
 import kotlinx.android.synthetic.main.activity_main.sort_and_filter as sortAndFilterTextView
 
 
-class MainActivity : AppCompatActivity(), FlightDetailsContract.View, ToolbarContract.View {
+class FlightSearchActivity : AppCompatActivity(), FlightDetailsContract.View, ToolbarContract.View {
 
     private lateinit var flightsCriteriaParameters: MutableMap<String, String>
     private lateinit var linearLayoutManager: LinearLayoutManager
@@ -40,14 +40,13 @@ class MainActivity : AppCompatActivity(), FlightDetailsContract.View, ToolbarCon
         setContentView(R.layout.activity_main)
 
         toolbarPresenter = ToolBarPresenter(this)
-        displayToolbarTitle()
-        displayToolbarSubtitle()
+        toolbarPresenter.startPresenting()
 
         setSupportActionBar(toolbar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        schedulersProvider = SchedulersProvider()
+        schedulersProvider = FlightsSchedulersProvider()
         flightDetailsInteractor = FlightDetailsInteractor(RestClient)
         flightDetailsPresenter = FlightDetailsPresenter(this, flightDetailsInteractor, schedulersProvider)
 
@@ -125,6 +124,7 @@ class MainActivity : AppCompatActivity(), FlightDetailsContract.View, ToolbarCon
 
     override fun onPause() {
         super.onPause()
+        toolbarPresenter.stopPresenting()
         flightDetailsPresenter.stopPresenting()
     }
 

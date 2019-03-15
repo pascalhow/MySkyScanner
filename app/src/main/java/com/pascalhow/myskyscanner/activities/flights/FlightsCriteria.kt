@@ -1,4 +1,4 @@
-package com.pascalhow.myskyscanner.activities.search
+package com.pascalhow.myskyscanner.activities.flights
 
 data class FlightsCriteria(
     var country: String = "UK",

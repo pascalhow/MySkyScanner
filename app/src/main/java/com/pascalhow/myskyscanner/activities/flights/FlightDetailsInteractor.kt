@@ -4,11 +4,11 @@ import com.pascalhow.myskyscanner.rest.RestClient
 import com.pascalhow.myskyscanner.rest.RestClient.FlightData
 import io.reactivex.Observable
 
-class FlightDetailsInteractor(private val restClient: RestClient) {
+class FlightDetailsInteractor(private val restClient: RestClient) : Interactor{
 
-    fun getTripDataModelList(flightCriteriaParameters: MutableMap<String, String>): Observable<List<TripDataModel>> {
-        return restClient.getSessionUrl(flightCriteriaParameters)
-            .flatMap { url -> restClient.search(url, flightCriteriaParameters[RestClient.KEY_API_KEY]!!) }
+    override fun getDataModelList(parameters: MutableMap<String, String>): Observable<List<TripDataModel>> {
+        return restClient.getSessionUrl(parameters)
+            .flatMap { url -> restClient.search(url, parameters[RestClient.KEY_API_KEY]!!) }
             .map { flightData -> createTripDataModelDataSet(flightData) }
     }
 

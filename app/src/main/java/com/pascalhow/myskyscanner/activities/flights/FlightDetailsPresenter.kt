@@ -8,7 +8,7 @@ import io.reactivex.disposables.Disposable
 
 class FlightDetailsPresenter(
     var view: FlightDetailsContract.View?,
-    private val interactor: FlightDetailsInteractor,
+    private val interactor: Interactor,
     private val schedulersProvider: SchedulersProvider
 ) : FlightDetailsContract.Presenter {
 
@@ -21,7 +21,7 @@ class FlightDetailsPresenter(
     override fun search(flightCriteriaParameters: MutableMap<String, String>) {
         view?.showLoading()
 
-        disposable = interactor.getTripDataModelList(flightCriteriaParameters)
+        disposable = interactor.getDataModelList(flightCriteriaParameters)
             .subscribeOn(schedulersProvider.io())
             .observeOn(schedulersProvider.mainThread())
             .subscribe(

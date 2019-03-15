@@ -1,12 +1,21 @@
 package com.pascalhow.myskyscanner.utils
 
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.schedulers.TestScheduler
 
 
-class SchedulersProvider {
+class FlightsSchedulersProvider : SchedulersProvider {
 
-    fun io() = Schedulers.io()!!
-    fun mainThread() = AndroidSchedulers.mainThread()!!
+    override fun io() : Scheduler = Schedulers.io()!!
+    override fun mainThread() : Scheduler = AndroidSchedulers.mainThread()!!
+    override fun testScheduler() : Scheduler = TestScheduler()
 
+}
+
+interface SchedulersProvider {
+    fun io() : Scheduler
+    fun mainThread() : Scheduler
+    fun testScheduler() : Scheduler
 }

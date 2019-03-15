@@ -1,13 +1,18 @@
 package com.pascalhow.myskyscanner.activities.toolbar
 
-import com.pascalhow.myskyscanner.activities.search.FlightsCriteria
+import com.pascalhow.myskyscanner.activities.flights.FlightsCriteria
+import org.joda.time.DateTime
+import org.joda.time.LocalDate
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 
 class ToolBarPresenter(private var view: ToolbarContract.View?) : ToolbarContract.Presenter {
 
     var flightsCriteria = FlightsCriteria()
+    private var today = LocalDate.now()
     private var nextMonday: Date? = null
     private var followingDay: Date? = null
 
