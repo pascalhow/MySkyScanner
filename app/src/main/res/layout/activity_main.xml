@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_centerInParent="true"
-            tools:visibility="visible"
+            tools:visibility="gone"
             android:id="@+id/progress_bar"/>
 
     <android.support.v7.widget.RecyclerView

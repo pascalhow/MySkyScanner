@@ -5,7 +5,6 @@ import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Before
 import org.junit.Test
@@ -26,7 +25,6 @@ class FlightDetailsPresenterTest {
     private lateinit var testScheduler: TestScheduler
     private lateinit var flightsCriteria: FlightsCriteria
     private lateinit var presenter: FlightDetailsPresenter
-
     private lateinit var flightsCriteriaParameters: MutableMap<String, String>
 
     private var outboundFlight = Flight(
@@ -79,7 +77,45 @@ class FlightDetailsPresenterTest {
     }
 
     @Test
-    fun `GIVEN search triggered created WHEN start presenting THEN hide progressbar loading`() {
+    fun `GIVEN activity resumes WHEN start presenting THEN hide progressbar`() {
+        presenter.startPresenting()
+
+        verify(view).hideLoading()
+    }
+
+    @Test
+    fun `GIVEN start presenting WHEN search triggers THEN show progressbar`() {
+        presenter.startPresenting()
+
+        givenTripData()
+
+        presenter.search(flightsCriteriaParameters)
+
+        verify(view).showLoading()
+    }
+
+    @Test
+    fun `GIVEN trip data emitted WHEN search completes THEN hide progressbar`() {
+        givenTripData()
+
+        presenter.search(flightsCriteriaParameters)
+        testScheduler.triggerActions()
+
+        verify(view).hideLoading()
+    }
+
+    @Test
+    fun `GIVEN trip data error WHEN search completes THEN hide progressbar`() {
+        givenErrorTripData()
+
+        presenter.search(flightsCriteriaParameters)
+        testScheduler.triggerActions()
+
+        verify(view).hideLoading()
+    }
+
+    @Test
+    fun `GIVEN trip data emitted WHEN search results available THEN load flight list`() {
         givenTripData()
 
         presenter.search(flightsCriteriaParameters)
@@ -88,8 +124,13 @@ class FlightDetailsPresenterTest {
         verify(view).loadFlightsList(any())
     }
 
+
     private fun givenTripData() {
         whenever(interactor.getDataModelList(flightsCriteriaParameters)).thenReturn(Observable.just(listOf(tripDataModel)))
+    }
+
+    private fun givenErrorTripData() {
+        whenever(interactor.getDataModelList(flightsCriteriaParameters)).thenReturn(Observable.error(Exception()))
     }
 
     companion object {
