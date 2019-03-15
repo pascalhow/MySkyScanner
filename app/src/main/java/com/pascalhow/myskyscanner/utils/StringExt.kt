@@ -9,8 +9,8 @@ fun String.formatDuration(format: String) : String {
     return String.format(format, hours, minutes)
 }
 
-fun String.formatTime(format: String): String {
-    val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
-    val formatter = SimpleDateFormat(format, Locale.ENGLISH)
+fun String.changeFormat(oldFormat: String, newFormat: String): String {
+    val parser = SimpleDateFormat(oldFormat, Locale.ENGLISH)
+    val formatter = SimpleDateFormat(newFormat, Locale.ENGLISH)
     return formatter.format(parser.parse(this))
 }

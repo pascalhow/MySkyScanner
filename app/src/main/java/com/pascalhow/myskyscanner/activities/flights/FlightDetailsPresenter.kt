@@ -3,7 +3,7 @@ package com.pascalhow.myskyscanner.activities.flights
 import android.util.Log
 import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import com.pascalhow.myskyscanner.utils.formatDuration
-import com.pascalhow.myskyscanner.utils.formatTime
+import com.pascalhow.myskyscanner.utils.changeFormat
 import io.reactivex.disposables.Disposable
 
 class FlightDetailsPresenter(
@@ -45,8 +45,8 @@ class FlightDetailsPresenter(
         tripDataModelList.forEach { dataModel ->
             val outBoundImageUrl = dataModel.outboundFlight.imageUrl
 
-            val outboundDepartureTime = dataModel.outboundFlight.departureTime?.formatTime(TIME_FORMAT)
-            val outboundArrivalTime = dataModel.outboundFlight.arrivalTime?.formatTime(TIME_FORMAT)
+            val outboundDepartureTime = dataModel.outboundFlight.departureTime?.changeFormat(OLD_TIME_FORMAT, NEW_TIME_FORMAT)
+            val outboundArrivalTime = dataModel.outboundFlight.arrivalTime?.changeFormat(OLD_TIME_FORMAT, NEW_TIME_FORMAT)
             val outboundTime = "$outboundDepartureTime - $outboundArrivalTime"
 
             val outboundOrigin = dataModel.outboundFlight.origin
@@ -58,8 +58,8 @@ class FlightDetailsPresenter(
 
             val inBoundImageUrl = dataModel.inboundFlight.imageUrl
 
-            val inboundDepartureTime = dataModel.inboundFlight.departureTime?.formatTime(TIME_FORMAT)
-            val inboundArrivalTime = dataModel.inboundFlight.arrivalTime?.formatTime(TIME_FORMAT)
+            val inboundDepartureTime = dataModel.inboundFlight.departureTime?.changeFormat(OLD_TIME_FORMAT, NEW_TIME_FORMAT)
+            val inboundArrivalTime = dataModel.inboundFlight.arrivalTime?.changeFormat(OLD_TIME_FORMAT, NEW_TIME_FORMAT)
             val inboundTime = "$inboundDepartureTime - $inboundArrivalTime"
 
             val inboundOrigin = dataModel.inboundFlight.origin
@@ -70,7 +70,7 @@ class FlightDetailsPresenter(
             val inboundFlightDuration = dataModel.inboundFlight.duration?.formatDuration(DURATION_FORMAT)
             val rating = "10.0"
             val price = dataModel.price
-            val airlineUrl = "airline.com"
+            val airlineUrl = "via agent.com"
 
             val tripViewModel = TripViewModel(
                 outBoundImageUrl,
@@ -92,17 +92,14 @@ class FlightDetailsPresenter(
         return tripViewModelList
     }
 
-    override fun loadTrips() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
     override fun stopPresenting() {
         disposable?.dispose()
         view = null
     }
 
     companion object {
-        private const val TIME_FORMAT = "HH:mm"
+        private const val OLD_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+        private const val NEW_TIME_FORMAT = "HH:mm"
         private const val DURATION_FORMAT = "%dh %02d"
     }
 

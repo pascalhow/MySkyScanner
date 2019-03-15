@@ -13,7 +13,6 @@ interface FlightDetailsContract {
     interface Presenter {
         fun startPresenting()
         fun search(flightCriteriaParameters: MutableMap<String, String>)
-        fun loadTrips()
         fun stopPresenting()
     }
 }
