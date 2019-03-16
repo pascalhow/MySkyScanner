@@ -5,8 +5,6 @@ interface FlightDetailsContract {
     interface View {
         fun showLoading()
         fun hideLoading()
-        fun showFlightsList()
-        fun hideFlightsList()
         fun loadFlightsList(tripsList: ArrayList<TripViewModel>)
     }
 

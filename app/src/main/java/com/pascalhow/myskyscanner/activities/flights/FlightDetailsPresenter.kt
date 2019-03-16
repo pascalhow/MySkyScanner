@@ -26,7 +26,8 @@ class FlightDetailsPresenter(
             .observeOn(schedulersProvider.mainThread())
             .subscribe(
                 { dataModelList ->
-                    view?.loadFlightsList(getTripViewModelList(dataModelList))
+                    val tripsViewModelList = transformToViewModelList(dataModelList)
+                    view?.loadFlightsList(tripsViewModelList)
                 },
                 { error ->
                     view?.hideLoading()
@@ -39,7 +40,7 @@ class FlightDetailsPresenter(
             )
     }
 
-    private fun getTripViewModelList(tripDataModelList: List<TripDataModel>): ArrayList<TripViewModel> {
+    private fun transformToViewModelList(tripDataModelList: List<TripDataModel>): ArrayList<TripViewModel> {
         val tripViewModelList = ArrayList<TripViewModel>()
 
         tripDataModelList.forEach { dataModel ->
@@ -53,7 +54,7 @@ class FlightDetailsPresenter(
             val outboundDestination = dataModel.outboundFlight.destination
             val outboundAirline = "$outboundOrigin-$outboundDestination, ${dataModel.outboundFlight.carrier}"
 
-            val outboundFlightType = dataModel.outboundFlight.stops ?: "Direct"
+            val outboundFlightType = dataModel.outboundFlight.stops ?: DIRECT
             val outboundFlightDuration = dataModel.outboundFlight.duration?.formatDuration(DURATION_FORMAT)
 
             val inBoundImageUrl = dataModel.inboundFlight.imageUrl
@@ -66,11 +67,11 @@ class FlightDetailsPresenter(
             val inboundDestination = dataModel.inboundFlight.destination
             val inboundAirline = "$inboundOrigin-$inboundDestination, ${dataModel.inboundFlight.carrier}"
 
-            val inboundFlightType = dataModel.inboundFlight.stops ?: "Direct"
+            val inboundFlightType = dataModel.inboundFlight.stops ?: DIRECT
             val inboundFlightDuration = dataModel.inboundFlight.duration?.formatDuration(DURATION_FORMAT)
-            val rating = "10.0"
+            val rating = DUMMY_RATING
             val price = dataModel.price
-            val airlineUrl = "via agent.com"
+            val airlineUrl = DUMMY_AIRLINE_URL
 
             val tripViewModel = TripViewModel(
                 outBoundImageUrl,
@@ -101,6 +102,9 @@ class FlightDetailsPresenter(
         private const val OLD_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
         private const val NEW_TIME_FORMAT = "HH:mm"
         private const val DURATION_FORMAT = "%dh %02d"
+        private const val DUMMY_RATING = "10.0"
+        private const val DUMMY_AIRLINE_URL = "via agent.com"
+        private const val DIRECT = "Direct"
     }
 
 }

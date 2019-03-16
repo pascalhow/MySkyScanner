@@ -23,7 +23,6 @@ interface SkyScannerApiService {
     ): Observable<FlightsResult>
 
     companion object {
-
         private const val SKYSCANNER_BASE_URL = "http://partners.api.skyscanner.net/apiservices/"
 
         fun create(): SkyScannerApiService {

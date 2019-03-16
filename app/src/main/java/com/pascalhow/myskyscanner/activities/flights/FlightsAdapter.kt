@@ -10,7 +10,7 @@ import com.pascalhow.myskyscanner.R
 import com.squareup.picasso.Picasso
 import java.util.ArrayList
 
-class TripsAdapter : RecyclerView.Adapter<TripsAdapter.TripsViewHolder>() {
+class FlightsAdapter : RecyclerView.Adapter<FlightsAdapter.TripsViewHolder>() {
 
     private var tripDataSet = ArrayList<TripViewModel>()
 
@@ -18,9 +18,7 @@ class TripsAdapter : RecyclerView.Adapter<TripsAdapter.TripsViewHolder>() {
         val flightDetailsItemView = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.recycler_item_trips_details, viewGroup, false)
 
-        return TripsViewHolder(
-            flightDetailsItemView
-        )
+        return TripsViewHolder(flightDetailsItemView)
     }
 
     fun setItemList(tripsList: ArrayList<TripViewModel>) {

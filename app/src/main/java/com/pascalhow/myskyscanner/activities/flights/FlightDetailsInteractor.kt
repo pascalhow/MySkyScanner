@@ -1,25 +1,26 @@
 package com.pascalhow.myskyscanner.activities.flights
 
 import com.pascalhow.myskyscanner.rest.FlightSearchRestClient
-import com.pascalhow.myskyscanner.rest.FlightSearchRestClient.FlightData
+import com.pascalhow.myskyscanner.rest.FlightSearchRestClient.ItinerariesMap
 import com.pascalhow.myskyscanner.rest.RestClient
 import io.reactivex.Observable
 
-class FlightDetailsInteractor(private val restClient: RestClient) : Interactor{
+class FlightDetailsInteractor(private val restClient: RestClient) : Interactor {
 
     override fun getDataModelList(parameters: MutableMap<String, String>): Observable<List<TripDataModel>> {
         return restClient.getSessionUrl(parameters)
             .flatMap { url -> restClient.search(url, parameters[FlightSearchRestClient.KEY_API_KEY]!!) }
-            .map { flightData -> createTripDataModelDataSet(flightData) }
+            .map { itinerariesMap -> createTripDataModelDataSet(itinerariesMap) }
     }
 
-    private fun createTripDataModelDataSet(flightData: FlightData): List<TripDataModel> {
+    private fun createTripDataModelDataSet(itinerariesMap: ItinerariesMap): List<TripDataModel> {
         val tripDataModelList = ArrayList<TripDataModel>()
-        val legsMap = flightData.flightResultsDataMapper.legsMap
-        val placesMap = flightData.flightResultsDataMapper.placesMap
-        val carriersMap = flightData.flightResultsDataMapper.carriersMap
+        val legsMap = itinerariesMap.flightResultsDataMapper.legsMap
+        val placesMap = itinerariesMap.flightResultsDataMapper.placesMap
+        val carriersMap = itinerariesMap.flightResultsDataMapper.carriersMap
 
-        flightData.itinerariesList?.forEach { itineraries ->
+        //  Only getting the first carrier from the list
+        itinerariesMap.itinerariesList?.forEach { itineraries ->
             val outboundFlight = Flight(
                 carriersMap?.get(legsMap?.get(itineraries.outboundLegId)?.carriers?.get(0))?.imageUrl,
                 legsMap?.get(itineraries.outboundLegId)?.departure,
@@ -45,10 +46,13 @@ class FlightDetailsInteractor(private val restClient: RestClient) : Interactor{
             val price = itineraries.pricingOptions?.get(0)?.price
 
             tripDataModelList.add(
-                TripDataModel(outboundFlight, inboundFlight, "£$price")
+                TripDataModel(outboundFlight, inboundFlight, "$DUMMY_CURRENCY$price")
             )
         }
         return tripDataModelList
     }
 
+    companion object {
+        private const val DUMMY_CURRENCY = "£"
+    }
 }

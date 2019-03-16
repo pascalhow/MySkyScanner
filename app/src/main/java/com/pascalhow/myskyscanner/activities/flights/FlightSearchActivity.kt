@@ -24,7 +24,7 @@ class FlightSearchActivity : AppCompatActivity(), FlightDetailsContract.View, To
 
     private lateinit var flightsCriteriaParameters: MutableMap<String, String>
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var tripsAdapter: TripsAdapter
+    private lateinit var flightsAdapter: FlightsAdapter
     private lateinit var toolbarPresenter: ToolBarPresenter
     private lateinit var schedulersProvider: SchedulersProvider
     private lateinit var flightDetailsInteractor: FlightDetailsInteractor
@@ -51,9 +51,9 @@ class FlightSearchActivity : AppCompatActivity(), FlightDetailsContract.View, To
         flightDetailsPresenter = FlightDetailsPresenter(this, flightDetailsInteractor, schedulersProvider)
 
         linearLayoutManager = LinearLayoutManager(this)
-        tripsAdapter = TripsAdapter()
+        flightsAdapter = FlightsAdapter()
         flightsRecyclerView.layoutManager = linearLayoutManager
-        flightsRecyclerView.adapter = tripsAdapter
+        flightsRecyclerView.adapter = flightsAdapter
 
         progressBar.setColour(this, R.color.colorPrimary)
 
@@ -72,7 +72,7 @@ class FlightSearchActivity : AppCompatActivity(), FlightDetailsContract.View, To
 
         return when (id) {
             R.id.action_search -> {
-                tripsAdapter.clearItemList()
+                flightsAdapter.clearItemList()
 
                 flightsCriteriaParameters = mutableMapOf(
                     "country" to toolbarPresenter.flightsCriteria.country,
@@ -111,15 +111,7 @@ class FlightSearchActivity : AppCompatActivity(), FlightDetailsContract.View, To
     }
 
     override fun loadFlightsList(tripsList: ArrayList<TripViewModel>) {
-        tripsAdapter.setItemList(tripsList)
-    }
-
-    override fun showFlightsList() {
-        flightsRecyclerView.visibility = View.VISIBLE
-    }
-
-    override fun hideFlightsList() {
-        flightsRecyclerView.visibility = View.GONE
+        flightsAdapter.setItemList(tripsList)
     }
 
     override fun onPause() {

@@ -2,7 +2,7 @@ package com.pascalhow.myskyscanner.activities.flights
 
 import com.nhaarman.mockito_kotlin.whenever
 import com.pascalhow.myskyscanner.rest.FlightResultsDataMapper
-import com.pascalhow.myskyscanner.rest.FlightSearchRestClient.FlightData
+import com.pascalhow.myskyscanner.rest.FlightSearchRestClient.ItinerariesMap
 import com.pascalhow.myskyscanner.rest.RestClient
 import com.pascalhow.myskyscanner.rest.model.Itineraries
 import com.pascalhow.myskyscanner.utils.SchedulersProvider
@@ -22,7 +22,7 @@ class FlightDetailsInteractorTest {
     private lateinit var restClient: RestClient
 
     private lateinit var flightsCriteria: FlightsCriteria
-    private lateinit var flightData: FlightData
+    private lateinit var itinerariesMap: ItinerariesMap
     private val dataMapper: FlightResultsDataMapper = FlightResultsDataMapper()
     private lateinit var testScheduler: TestScheduler
     private lateinit var flightsCriteriaParameters: MutableMap<String, String>
@@ -72,7 +72,7 @@ class FlightDetailsInteractorTest {
             "locationSchema" to flightsCriteria.locationSchema
         )
 
-        flightData = FlightData(listOf(Itineraries()), dataMapper)
+        itinerariesMap = ItinerariesMap(listOf(Itineraries()), dataMapper)
         interactor = FlightDetailsInteractor(restClient)
     }
 
@@ -89,7 +89,7 @@ class FlightDetailsInteractorTest {
 
     private fun givenSessionUrl(parameters: MutableMap<String, String>) {
         whenever(restClient.getSessionUrl(parameters)).thenReturn(Observable.just(SESSION_URL))
-        whenever(restClient.search(SESSION_URL, API_KEY)).thenReturn(Observable.just(flightData))
+        whenever(restClient.search(SESSION_URL, API_KEY)).thenReturn(Observable.just(itinerariesMap))
     }
 
     companion object {
