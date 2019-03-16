@@ -19,6 +19,7 @@
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="@dimen/image_size_small"
                 android:orientation="horizontal"
                 android:padding="@dimen/flight_detail_card_view_padding"
                 android:weightSum="10"
@@ -95,6 +96,7 @@
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="@dimen/image_size_small"
                 android:orientation="horizontal"
                 android:padding="@dimen/flight_detail_card_view_padding"
                 android:id="@+id/inbound_flight_layout">

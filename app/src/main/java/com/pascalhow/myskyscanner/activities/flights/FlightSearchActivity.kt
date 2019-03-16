@@ -9,7 +9,7 @@ import android.view.View
 import com.pascalhow.myskyscanner.R
 import com.pascalhow.myskyscanner.activities.toolbar.ToolBarPresenter
 import com.pascalhow.myskyscanner.activities.toolbar.ToolbarContract
-import com.pascalhow.myskyscanner.rest.RestClient
+import com.pascalhow.myskyscanner.rest.FlightSearchRestClient
 import com.pascalhow.myskyscanner.utils.FlightsSchedulersProvider
 import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import com.pascalhow.myskyscanner.utils.setColour
@@ -47,7 +47,7 @@ class FlightSearchActivity : AppCompatActivity(), FlightDetailsContract.View, To
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         schedulersProvider = FlightsSchedulersProvider()
-        flightDetailsInteractor = FlightDetailsInteractor(RestClient)
+        flightDetailsInteractor = FlightDetailsInteractor(FlightSearchRestClient)
         flightDetailsPresenter = FlightDetailsPresenter(this, flightDetailsInteractor, schedulersProvider)
 
         linearLayoutManager = LinearLayoutManager(this)

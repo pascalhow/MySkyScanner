@@ -1,14 +1,15 @@
 package com.pascalhow.myskyscanner.activities.flights
 
+import com.pascalhow.myskyscanner.rest.FlightSearchRestClient
+import com.pascalhow.myskyscanner.rest.FlightSearchRestClient.FlightData
 import com.pascalhow.myskyscanner.rest.RestClient
-import com.pascalhow.myskyscanner.rest.RestClient.FlightData
 import io.reactivex.Observable
 
 class FlightDetailsInteractor(private val restClient: RestClient) : Interactor{
 
     override fun getDataModelList(parameters: MutableMap<String, String>): Observable<List<TripDataModel>> {
         return restClient.getSessionUrl(parameters)
-            .flatMap { url -> restClient.search(url, parameters[RestClient.KEY_API_KEY]!!) }
+            .flatMap { url -> restClient.search(url, parameters[FlightSearchRestClient.KEY_API_KEY]!!) }
             .map { flightData -> createTripDataModelDataSet(flightData) }
     }
 
