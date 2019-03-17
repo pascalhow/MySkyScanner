@@ -14,6 +14,7 @@ import com.pascalhow.myskyscanner.utils.FlightsSchedulersProvider
 import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import com.pascalhow.myskyscanner.utils.setColour
 import kotlinx.android.synthetic.main.activity_main.toolbar
+import java.util.*
 import kotlinx.android.synthetic.main.activity_main.flight_details_recycler_view as flightsRecyclerView
 import kotlinx.android.synthetic.main.activity_main.flight_details_results_count as flightDetailsCountTextView
 import kotlinx.android.synthetic.main.activity_main.progress_bar as progressBar
@@ -99,7 +100,8 @@ class FlightSearchActivity : AppCompatActivity(), FlightDetailsContract.View, To
     }
 
     override fun displayToolbarSubtitle() {
-        toolbar.subtitle = toolbarPresenter.buildSubtitle()
+        val calendar = Calendar.getInstance()
+        toolbar.subtitle = toolbarPresenter.buildSubtitle(calendar)
     }
 
     override fun showLoading() {

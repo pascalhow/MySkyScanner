@@ -38,7 +38,7 @@ dependencies {
         exclude group: 'com.android.support'
         exclude module: ['exifinterface', 'support-annotations']
     }
-    implementation 'joda-time:joda-time:2.10.1'
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.21"
 
     testImplementation 'junit:junit:4.12'
     testImplementation ("com.nhaarman:mockito-kotlin-kt1.1:1.5.0"){

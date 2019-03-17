@@ -1,5 +1,7 @@
 package com.pascalhow.myskyscanner.activities.toolbar
 
+import java.util.*
+
 interface ToolbarContract {
 
     interface View {
@@ -10,7 +12,7 @@ interface ToolbarContract {
     interface Presenter {
         fun startPresenting()
         fun buildTitle(): String
-        fun buildSubtitle(): String
+        fun buildSubtitle(calendar: Calendar): String
         fun stopPresenting()
     }
 

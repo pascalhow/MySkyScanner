@@ -1,18 +1,13 @@
 package com.pascalhow.myskyscanner.activities.toolbar
 
 import com.pascalhow.myskyscanner.activities.flights.FlightsCriteria
-import org.joda.time.DateTime
-import org.joda.time.LocalDate
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 
 class ToolBarPresenter(private var view: ToolbarContract.View?) : ToolbarContract.Presenter {
 
     var flightsCriteria = FlightsCriteria()
-    private var today = LocalDate.now()
     private var nextMonday: Date? = null
     private var followingDay: Date? = null
 
@@ -23,8 +18,8 @@ class ToolBarPresenter(private var view: ToolbarContract.View?) : ToolbarContrac
 
     override fun buildTitle(): String = "${flightsCriteria.originPlace} - ${flightsCriteria.destinationPlace}"
 
-    override fun buildSubtitle(): String {
-        updateFlightCriteria()
+    override fun buildSubtitle(calendar: Calendar): String {
+        updateFlightCriteria(calendar)
 
         val nextMondayDate = nextMonday!!.format(TOOLBAR_DATE_FORMAT)
         val followingDayDate = followingDay!!.format(TOOLBAR_DATE_FORMAT)
@@ -36,21 +31,20 @@ class ToolBarPresenter(private var view: ToolbarContract.View?) : ToolbarContrac
         view = null
     }
 
-    private fun refreshSearchDates() {
-        val now = Calendar.getInstance()
-        val weekday = now.get(Calendar.DAY_OF_WEEK)
+    private fun refreshSearchDates(calendar: Calendar) {
+        val weekday = calendar.get(Calendar.DAY_OF_WEEK)
         if (weekday != Calendar.MONDAY) {
             val days = (Calendar.SATURDAY - weekday + DAYS_BETWEEN_SATURDAY_AND_MONDAY) % NUMBER_OF_DAYS_IN_WEEK
-            now.add(Calendar.DAY_OF_YEAR, days)
+            calendar.add(Calendar.DAY_OF_YEAR, days)
         }
-        nextMonday = now.time
+        nextMonday = calendar.time
 
-        now.add(Calendar.DAY_OF_YEAR, 1)
-        followingDay = now.time
+        calendar.add(Calendar.DAY_OF_YEAR, 1)
+        followingDay = calendar.time
     }
 
-    private fun updateFlightCriteria() {
-        refreshSearchDates()
+    private fun updateFlightCriteria(calendar: Calendar) {
+        refreshSearchDates(calendar)
         flightsCriteria.run {
             outboundDate = nextMonday!!.format(SEARCH_DATE_FORMAT)
             inboundDate = followingDay!!.format(SEARCH_DATE_FORMAT)
