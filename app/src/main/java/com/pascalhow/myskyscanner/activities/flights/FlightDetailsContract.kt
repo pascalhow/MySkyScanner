@@ -9,6 +9,7 @@ interface FlightDetailsContract {
     }
 
     interface Presenter {
+        fun setView(view: View)
         fun startPresenting()
         fun search(flightCriteriaParameters: MutableMap<String, String>)
         fun stopPresenting()

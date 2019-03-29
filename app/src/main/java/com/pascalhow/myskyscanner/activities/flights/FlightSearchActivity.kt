@@ -9,12 +9,11 @@ import android.view.View
 import com.pascalhow.myskyscanner.R
 import com.pascalhow.myskyscanner.activities.toolbar.ToolBarPresenter
 import com.pascalhow.myskyscanner.activities.toolbar.ToolbarContract
-import com.pascalhow.myskyscanner.rest.FlightSearchRestClient
-import com.pascalhow.myskyscanner.utils.FlightsSchedulersProvider
-import com.pascalhow.myskyscanner.utils.SchedulersProvider
+import com.pascalhow.myskyscanner.application.MySkyScannerApplication
 import com.pascalhow.myskyscanner.utils.setColour
 import kotlinx.android.synthetic.main.activity_main.toolbar
 import java.util.*
+import javax.inject.Inject
 import kotlinx.android.synthetic.main.activity_main.flight_details_recycler_view as flightsRecyclerView
 import kotlinx.android.synthetic.main.activity_main.flight_details_results_count as flightDetailsCountTextView
 import kotlinx.android.synthetic.main.activity_main.progress_bar as progressBar
@@ -27,9 +26,9 @@ class FlightSearchActivity : AppCompatActivity(), FlightDetailsContract.View, To
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var flightsAdapter: FlightsAdapter
     private lateinit var toolbarPresenter: ToolBarPresenter
-    private lateinit var schedulersProvider: SchedulersProvider
-    private lateinit var flightDetailsInteractor: FlightDetailsInteractor
-    private lateinit var flightDetailsPresenter: FlightDetailsPresenter
+
+    @Inject
+    lateinit var flightDetailsPresenter: FlightDetailsPresenter
 
     override fun onResume() {
         super.onResume()
@@ -40,16 +39,16 @@ class FlightSearchActivity : AppCompatActivity(), FlightDetailsContract.View, To
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        (application as MySkyScannerApplication).appComponent.inject(this)
+
         toolbarPresenter = ToolBarPresenter(this)
         toolbarPresenter.startPresenting()
+
+        flightDetailsPresenter.setView(this)
 
         setSupportActionBar(toolbar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        schedulersProvider = FlightsSchedulersProvider()
-        flightDetailsInteractor = FlightDetailsInteractor(FlightSearchRestClient)
-        flightDetailsPresenter = FlightDetailsPresenter(this, flightDetailsInteractor, schedulersProvider)
 
         linearLayoutManager = LinearLayoutManager(this)
         flightsAdapter = FlightsAdapter()

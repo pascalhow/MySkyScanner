@@ -1,18 +1,23 @@
 package com.pascalhow.myskyscanner.activities.flights
 
 import android.util.Log
+import android.view.View
 import com.pascalhow.myskyscanner.utils.SchedulersProvider
 import com.pascalhow.myskyscanner.utils.formatDuration
 import com.pascalhow.myskyscanner.utils.changeFormat
 import io.reactivex.disposables.Disposable
 
 class FlightDetailsPresenter(
-    var view: FlightDetailsContract.View?,
     private val interactor: Interactor,
     private val schedulersProvider: SchedulersProvider
 ) : FlightDetailsContract.Presenter {
 
+    private var view: FlightDetailsContract.View? = null
     private var disposable: Disposable? = null
+
+    override fun setView(view: FlightDetailsContract.View) {
+        this.view = view
+    }
 
     override fun startPresenting() {
         view?.hideLoading()
