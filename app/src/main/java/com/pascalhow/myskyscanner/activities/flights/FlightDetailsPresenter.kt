@@ -1,19 +1,15 @@
 package com.pascalhow.myskyscanner.activities.flights
 
 import android.util.Log
-import android.view.View
-import com.pascalhow.myskyscanner.utils.SchedulersProvider
-import com.pascalhow.myskyscanner.utils.formatDuration
-import com.pascalhow.myskyscanner.utils.changeFormat
-import io.reactivex.disposables.Disposable
+import com.pascalhow.myskyscanner.mapper.TripModelDataMapper
+import io.reactivex.observers.DisposableObserver
 
 class FlightDetailsPresenter(
-    private val interactor: Interactor,
-    private val schedulersProvider: SchedulersProvider
+    private val dataMapper: TripModelDataMapper,
+    private val interactor: FlightDetailsInteractor
 ) : FlightDetailsContract.Presenter {
 
     private var view: FlightDetailsContract.View? = null
-    private var disposable: Disposable? = null
 
     override fun setView(view: FlightDetailsContract.View) {
         this.view = view
@@ -26,90 +22,44 @@ class FlightDetailsPresenter(
     override fun search(flightCriteriaParameters: MutableMap<String, String>) {
         view?.showLoading()
 
-        disposable = interactor.getDataModelList(flightCriteriaParameters)
-            .subscribeOn(schedulersProvider.io())
-            .observeOn(schedulersProvider.mainThread())
-            .subscribe(
-                { dataModelList ->
-                    val tripsViewModelList = transformToViewModelList(dataModelList)
-                    view?.loadFlightsList(tripsViewModelList)
-                },
-                { error ->
-                    view?.hideLoading()
-                    Log.e("Error Fetching Trips!!!", error.message)
-                },
-                {
-                    view?.hideLoading()
-                    Log.d("Updates Complete", "Finished Fetching Trips")
-                }
-            )
-    }
-
-    private fun transformToViewModelList(tripDataModelList: List<TripDataModel>): ArrayList<TripViewModel> {
-        val tripViewModelList = ArrayList<TripViewModel>()
-
-        tripDataModelList.forEach { dataModel ->
-            val outBoundImageUrl = dataModel.outboundFlight.imageUrl
-
-            val outboundDepartureTime = dataModel.outboundFlight.departureTime?.changeFormat(OLD_TIME_FORMAT, NEW_TIME_FORMAT)
-            val outboundArrivalTime = dataModel.outboundFlight.arrivalTime?.changeFormat(OLD_TIME_FORMAT, NEW_TIME_FORMAT)
-            val outboundTime = "$outboundDepartureTime - $outboundArrivalTime"
-
-            val outboundOrigin = dataModel.outboundFlight.origin
-            val outboundDestination = dataModel.outboundFlight.destination
-            val outboundAirline = "$outboundOrigin-$outboundDestination, ${dataModel.outboundFlight.carrier}"
-
-            val outboundFlightType = dataModel.outboundFlight.stops ?: DIRECT
-            val outboundFlightDuration = dataModel.outboundFlight.duration?.formatDuration(DURATION_FORMAT)
-
-            val inBoundImageUrl = dataModel.inboundFlight.imageUrl
-
-            val inboundDepartureTime = dataModel.inboundFlight.departureTime?.changeFormat(OLD_TIME_FORMAT, NEW_TIME_FORMAT)
-            val inboundArrivalTime = dataModel.inboundFlight.arrivalTime?.changeFormat(OLD_TIME_FORMAT, NEW_TIME_FORMAT)
-            val inboundTime = "$inboundDepartureTime - $inboundArrivalTime"
-
-            val inboundOrigin = dataModel.inboundFlight.origin
-            val inboundDestination = dataModel.inboundFlight.destination
-            val inboundAirline = "$inboundOrigin-$inboundDestination, ${dataModel.inboundFlight.carrier}"
-
-            val inboundFlightType = dataModel.inboundFlight.stops ?: DIRECT
-            val inboundFlightDuration = dataModel.inboundFlight.duration?.formatDuration(DURATION_FORMAT)
-            val rating = DUMMY_RATING
-            val price = dataModel.price
-            val airlineUrl = DUMMY_AIRLINE_URL
-
-            val tripViewModel = TripViewModel(
-                outBoundImageUrl,
-                outboundTime,
-                outboundAirline,
-                outboundFlightType,
-                outboundFlightDuration,
-                inBoundImageUrl,
-                inboundTime,
-                inboundAirline,
-                inboundFlightType,
-                inboundFlightDuration,
-                rating,
-                price,
-                airlineUrl
-            )
-            tripViewModelList.add(tripViewModel)
-        }
-        return tripViewModelList
+        interactor.execute(FlightDetailsObserver(), flightCriteriaParameters)
     }
 
     override fun stopPresenting() {
-        disposable?.dispose()
+        interactor.dispose()
         view = null
     }
 
-    companion object {
-        private const val OLD_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
-        private const val NEW_TIME_FORMAT = "HH:mm"
-        private const val DURATION_FORMAT = "%dh %02d"
-        private const val DUMMY_RATING = "10.0"
-        private const val DUMMY_AIRLINE_URL = "via agent.com"
-        private const val DIRECT = "Direct"
+    private fun showFlightDetailsInView(dataModelList: List<TripDataModel>) {
+        val tripsViewModelList = dataMapper.transform(dataModelList)
+        view?.loadFlightsList(tripsViewModelList)
     }
 
+    private fun showErrorMessage(error: Throwable) {
+        view?.hideLoading()
+        Log.e("Error Fetching Trips!!!", error.message)
+    }
+
+    private fun hideProgressBarLoading() {
+        view?.hideLoading()
+        Log.d("Updates Complete", "Finished Fetching Trips")
+    }
+
+    private inner class FlightDetailsObserver : DisposableObserver<List<TripDataModel>>() {
+
+        override fun onComplete() {
+            this@FlightDetailsPresenter.hideProgressBarLoading()
+        }
+
+        override fun onNext(tripDataModel: List<TripDataModel>) {
+            this@FlightDetailsPresenter.showFlightDetailsInView(tripDataModel)
+        }
+
+        override fun onError(e: Throwable) {
+            this@FlightDetailsPresenter.showErrorMessage(e)
+        }
+
+    }
 }
+
+
