@@ -1,10 +1,10 @@
 package com.pascalhow.myskyscanner.activities.flights
 
-import com.pascalhow.myskyscanner.mapper.TripModelDataMapper
+import com.pascalhow.myskyscanner.mapper.TripViewModelDataMapper
 import com.pascalhow.myskyscanner.utils.changeFormat
 import com.pascalhow.myskyscanner.utils.formatDuration
 
-class TripModelDataMapperImpl : TripModelDataMapper {
+class TripViewModelDataMapperImpl : TripViewModelDataMapper {
 
     override fun transform(tripDataModelList: List<TripDataModel>): ArrayList<TripViewModel> {
         val tripViewModelList = ArrayList<TripViewModel>()

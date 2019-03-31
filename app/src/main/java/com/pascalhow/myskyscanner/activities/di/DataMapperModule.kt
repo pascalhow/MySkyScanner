@@ -1,7 +1,7 @@
 package com.pascalhow.myskyscanner.activities.di
 
-import com.pascalhow.myskyscanner.activities.flights.TripModelDataMapperImpl
-import com.pascalhow.myskyscanner.mapper.TripModelDataMapper
+import com.pascalhow.myskyscanner.activities.flights.TripViewModelDataMapperImpl
+import com.pascalhow.myskyscanner.mapper.TripViewModelDataMapper
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -11,5 +11,5 @@ class DataMapperModule {
 
     @Provides
     @Singleton
-    fun provideTripModelDataMapper(): TripModelDataMapper = TripModelDataMapperImpl()
+    fun provideTripViewModelDataMapper(): TripViewModelDataMapper = TripViewModelDataMapperImpl()
 }

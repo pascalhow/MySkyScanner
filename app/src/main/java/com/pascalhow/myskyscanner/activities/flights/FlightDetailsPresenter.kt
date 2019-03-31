@@ -1,11 +1,11 @@
 package com.pascalhow.myskyscanner.activities.flights
 
 import android.util.Log
-import com.pascalhow.myskyscanner.mapper.TripModelDataMapper
+import com.pascalhow.myskyscanner.mapper.TripViewModelDataMapper
 import io.reactivex.observers.DisposableObserver
 
 class FlightDetailsPresenter(
-    private val dataMapper: TripModelDataMapper,
+    private val dataMapper: TripViewModelDataMapper,
     private val interactor: FlightDetailsInteractor
 ) : FlightDetailsContract.Presenter {
 

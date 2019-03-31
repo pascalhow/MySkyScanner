@@ -9,10 +9,10 @@ abstract class Interactor<T>(private val schedulersProvider: SchedulersProvider)
 
     private val disposables = CompositeDisposable()
 
-    abstract fun buildUseCaseObservables(params: MutableMap<String, String>): Observable<T>
+    abstract fun buildInteractorObservables(params: MutableMap<String, String>): Observable<T>
 
     fun execute(observer: DisposableObserver<T>, params: MutableMap<String, String>) {
-        val observable = buildUseCaseObservables(params)
+        val observable = buildInteractorObservables(params)
             .subscribeOn(schedulersProvider.io())
             .observeOn(schedulersProvider.mainThread())
 

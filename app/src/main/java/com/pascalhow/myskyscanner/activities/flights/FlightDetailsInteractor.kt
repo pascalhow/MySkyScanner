@@ -8,7 +8,7 @@ class FlightDetailsInteractor(
     schedulersProvider: SchedulersProvider
 ) : Interactor<List<TripDataModel>>(schedulersProvider) {
 
-    override fun buildUseCaseObservables(params: MutableMap<String, String>): Observable<List<TripDataModel>> {
+    override fun buildInteractorObservables(params: MutableMap<String, String>): Observable<List<TripDataModel>> {
         return repository.getTrips(params)
     }
 
