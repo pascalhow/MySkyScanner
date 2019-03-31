@@ -1,19 +1,18 @@
 package com.pascalhow.myskyscanner.activities.flights
 
-import com.pascalhow.myskyscanner.rest.FlightSearchRestClient
+import com.pascalhow.myskyscanner.activities.flights.CloudFlightDataStore.ItinerariesMap
 import io.reactivex.Observable
 
-class TripsRepository : Repository {
-
-    private val restClient = FlightSearchRestClient
+class FlightRepository(private val flightDataStore: FlightDataStore) : Repository {
 
     override fun getTrips(params: MutableMap<String, String>): Observable<List<TripDataModel>> {
-        return restClient.getSessionUrl(params)
-            .flatMap { url -> restClient.search(url, params[FlightSearchRestClient.KEY_API_KEY]!!) }
-            .map { itinerariesMap -> createTripDataModelDataSet(itinerariesMap) }
+        return flightDataStore.flightEntityList(params)
+            .map { itinerariesMap ->
+                createTripDataModelDataSet(itinerariesMap)
+            }
     }
 
-    private fun createTripDataModelDataSet(itinerariesMap: FlightSearchRestClient.ItinerariesMap): List<TripDataModel> {
+    private fun createTripDataModelDataSet(itinerariesMap: ItinerariesMap): List<TripDataModel> {
         val tripDataModelList = ArrayList<TripDataModel>()
         val legsMap = itinerariesMap.flightResultsDataMapper.legsMap
         val placesMap = itinerariesMap.flightResultsDataMapper.placesMap
@@ -59,4 +58,5 @@ class TripsRepository : Repository {
     companion object {
         private const val DUMMY_CURRENCY = "£"
     }
+
 }
